@@ -1,2 +1,7 @@
 /.idea/
-/__pycache__/
+/*/__pycache__/
+/frontend/node_modules/
+/frontend/package-lock.json
+/backend/templates/
+/backend/static/
+
