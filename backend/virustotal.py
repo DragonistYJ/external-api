@@ -75,3 +75,25 @@ def url_endpoint():
         else:
             url_collection.replace_one({"_id": url["_id"]}, url)
             return make_response("success", "success update url=" + url["_id"])
+
+
+@vt.route("/file_report", methods=["get"])
+def file_report_endpoint():
+    if not request.args["file"]:
+        return make_response("error", "Miss key arg file")
+    url = "https://www.virustotal.com/api/v3/files/" + request.args["file"]
+    response = requests.request("GET", url, headers=vt_headers)
+    result = response.json()
+    if "error" in result:
+        return make_response("error", "VT server error, please try again")
+    else:
+        file_report = result["data"]["attributes"]
+        file_report["_id"] = result["data"]["id"]
+        file_report_collection = vt_database["file_report"]
+        exist_file_report = file_report_collection.find_one({"_id": file_report["_id"]})
+        if exist_file_report is None:
+            file_report_collection.insert_one(url)
+            return make_response("success", "success query url=" + file_report["_id"])
+        else:
+            file_report_collection.replace_one({"_id": file_report["_id"]}, file_report)
+            return make_response("success", "success update url=" + file_report["_id"])
